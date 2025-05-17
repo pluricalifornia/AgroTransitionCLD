@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agroecological Transitions: Causal Loop Diagram</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    h1 {
+      color: #2e7d32;
+      margin-bottom: 10px;
+    }
+    
+    .description {
+      color: #666;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .main-content {
+      display: flex;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    .sidebar {
+      flex: 0 0 320px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      padding: 15px;
+    }
+    
+    .diagram-container {
+      flex: 1;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .insights {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      padding: 15px;
+      margin-top: 20px;
+    }
+    
+    .sidebar-header {
+      color: #2e7d32;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+    
+    .loop-item {
+      cursor: pointer;
+      border-left: 4px solid #999;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+    
+    .loop-item:hover {
+      background-color: #f9f9f9;
+    }
+    
+    .loop-item.active {
+      background-color: #e8f5e9;
+    }
+    
+    .loop-title {
+      font-weight: bold;
+      margin: 0;
+    }
+    
+    .loop-description {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #666;
+      display: none;
+    }
+    
+    .loop-item.active .loop-description {
+      display: block;
+    }
+    
+    .node-info {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+      display: none;
+    }
+    
+    .node-info.visible {
+      display: block;
+    }
+    
+    .node-title {
+      font-weight: bold;
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+    
+    .node-description {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 10px;
+    }
+    
+    .node-type {
+      display: flex;
+      align-items: center;
+      font-size: 12px;
+      color: #777;
+    }
+    
+    .color-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    
+    .legend {
+      margin-top: 20px;
+      padding: 12px;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+    }
+    
+    .legend-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .insights-title {
+      font-weight: bold;
+      color: #2e7d32;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    
+    .insights-list {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 14px;
+      color: #555;
+    }
+    
+    .insights-list li {
+      margin-bottom: 8px;
+    }
+    
+    /* SVG styles */
+    .node {
+      cursor: pointer;
+    }
+    
+    .node-circle {
+      transition: all 0.2s ease;
+    }
+    
+    .node-label {
+      font-size: 12px;
+      pointer-events: none;
+    }
+    
+    .node-abbreviation {
+      font-size: 12px;
+      font-weight: bold;
+      fill: white;
+      pointer-events: none;
+    }
+    
+    .path {
+      fill: none;
+      transition: all 0.2s ease;
+    }
+    
+    .path-label {
+      font-size: 12px;
+      pointer-events: none;
+    }
+    
+    /* Pan/Zoom controls */
+    .zoom-controls {
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      display: flex;
+      gap: 5px;
+    }
+    
+    .zoom-button {
+      width: 30px;
+      height: 30px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .zoom-button:hover {
+      background-color: #f5f5f5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Agroecological Transitions: Causal Loop Diagram</h1>
+      <p class="description">
+        This diagram illustrates the key feedback loops that drive or hinder agroecological transitions, 
+        highlighting how different dimensions interact to either reinforce positive change or create barriers.
+      </p>
+    </div>
+    
+    <div class="main-content">
+      <div class="sidebar">
+        <h3 class="sidebar-header">Key Feedback Loops</h3>
+        <div id="loops-list">
+          <!-- Loop items will be inserted here -->
+        </div>
+        
+        <div id="node-info" class="node-info">
+          <!-- Selected node info will be displayed here -->
+        </div>
+        
+        <div class="legend">
+          <h4 class="legend-title">Legend</h4>
+          <div class="legend-item">
+            <div class="color-indicator" style="background-color: #4caf50;"></div>
+            <span>Dimension/Leverage Point</span>
+          </div>
+          <div class="legend-item">
+            <div class="color-indicator" style="background-color: #2196f3;"></div>
+            <span>Outcome/Indicator</span>
+          </div>
+          <div class="legend-item">
+            <div class="color-indicator" style="background-color: #f44336;"></div>
+            <span>Challenge/Barrier</span>
+          </div>
+          <div class="legend-item" style="margin-top: 8px;">
+            <div style="width: 20px; height: 2px; background-color: #4caf50; margin-right: 8px;"></div>
+            <span>Positive relationship (+)</span>
+          </div>
+          <div class="legend-item">
+            <div style="width: 20px; height: 2px; background-color: #f44336; margin-right: 8px; border-top: 1px dashed #f44336;"></div>
+            <span>Negative relationship (-)</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="diagram-container">
+        <svg id="diagram" width="800" height="600" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#999" />
+            </marker>
+            <marker id="arrow-active" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#333" />
+            </marker>
+          </defs>
+          <g id="svg-content">
+            <!-- Paths and nodes will be inserted here -->
+          </g>
+        </svg>
+        
+        <div class="zoom-controls">
+          <button class="zoom-button" id="zoom-in">+</button>
+          <button class="zoom-button" id="zoom-out">-</button>
+          <button class="zoom-button" id="zoom-reset">R</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="insights">
+      <h3 class="insights-title">Key Insights from Systems Analysis</h3>
+      <ul class="insights-list">
+        <li><strong>Land tenure and distribution</strong> is a fundamental structural barrier that must be addressed for successful agroecological transitions</li>
+        <li><strong>Multiple reinforcing loops drive transition</strong> - when activated together, they can create momentum for change</li>
+        <li><strong>Corporate power creates a strong balancing loop</strong> that resists transition and maintains the status quo</li>
+        <li><strong>Key leverage points</strong> include land reform, strengthening social organizations, creating alternative markets, and developing knowledge systems</li>
+        <li><strong>Breaking input dependency</strong> is critical to enable farmer autonomy and support diversification</li>
+        <li><strong>Successful transitions address multiple dimensions simultaneously</strong> rather than focusing on single-point interventions</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // Data for the causal loop diagram
+    const nodes = [
+      { id: 'social-org', label: 'Social Organization', x: 450, y: 130, type: 'dimension', description: 'Collective action, cooperatives, and grassroots networks.' },
+      { id: 'policy', label: 'Supportive Policies', x: 700, y: 180, type: 'dimension', description: 'Regulations and subsidies that favor agroecological practices.' },
+      { id: 'corp-power', label: 'Corporate Power', x: 700, y: 350, type: 'challenge', description: 'Influence of agribusiness on food systems.' },
+      { id: 'input-depend', label: 'Input Dependency', x: 600, y: 470, type: 'challenge', description: 'Reliance on external inputs like fertilizers and pesticides.' },
+      { id: 'biodiversity', label: 'Agricultural Biodiversity', x: 400, y: 420, type: 'outcome', description: 'Diversity of crops, species, and ecosystem functions on farms.' },
+      { id: 'farmer-auton', label: 'Farmer Autonomy', x: 250, y: 350, type: 'outcome', description: 'The ability of farmers to make independent decisions.' },
+      { id: 'markets', label: 'Local/Territorial Markets', x: 200, y: 200, type: 'dimension', description: 'Alternative market systems rooted in place.' },
+      { id: 'knowledge', label: 'Agroecological Knowledge', x: 400, y: 250, type: 'outcome', description: 'Farmer-to-farmer and indigenous knowledge systems.' },
+      { id: 'land-tenure', label: 'Land Tenure & Distribution', x: 500, y: 350, type: 'challenge', description: 'Patterns of land ownership, access rights, and property regimes that shape who controls productive resources.' }
+    ];
+
+    const loops = [
+      {
+        id: 'autonomy-loop',
+        name: 'Autonomy Reinforcing Loop',
+        description: 'When farmers gain more autonomy, they can better implement agroecological practices, which reduces dependency on external inputs, further increasing their autonomy.',
+        color: '#4caf50',
+        paths: [
+          { from: 'farmer-auton', to: 'biodiversity', relation: 'positive', label: 'enables' },
+          { from: 'biodiversity', to: 'input-depend', relation: 'negative', label: 'reduces' },
+          { from: 'input-depend', to: 'farmer-auton', relation: 'negative', label: 'limits' }
+        ]
+      },
+      {
+        id: 'knowledge-loop',
+        name: 'Knowledge Reinforcing Loop',
+        description: 'Social organization facilitates knowledge sharing, which enables biodiversity management, further strengthening social networks around agroecology.',
+        color: '#2196f3',
+        paths: [
+          { from: 'social-org', to: 'knowledge', relation: 'positive', label: 'builds' },
+          { from: 'knowledge', to: 'biodiversity', relation: 'positive', label: 'increases' },
+          { from: 'biodiversity', to: 'social-org', relation: 'positive', label: 'motivates' }
+        ]
+      },
+      {
+        id: 'market-loop',
+        name: 'Market Access Reinforcing Loop',
+        description: 'Alternative markets increase farmer autonomy, which enables them to produce more diverse crops, making local markets more viable.',
+        color: '#ff9800',
+        paths: [
+          { from: 'markets', to: 'farmer-auton', relation: 'positive', label: 'increases' },
+          { from: 'farmer-auton', to: 'biodiversity', relation: 'positive', label: 'enables' },
+          { from: 'biodiversity', to: 'markets', relation: 'positive', label: 'supports' }
+        ]
+      },
+      {
+        id: 'policy-loop',
+        name: 'Policy & Structural Power Loop',
+        description: 'Social organization enables policy advocacy, which can result in supportive policies that constrain corporate power, reducing input dependency.',
+        color: '#9c27b0',
+        paths: [
+          { from: 'social-org', to: 'policy', relation: 'positive', label: 'advocates for' },
+          { from: 'policy', to: 'corp-power', relation: 'negative', label: 'constrains' },
+          { from: 'corp-power', to: 'input-depend', relation: 'positive', label: 'promotes' },
+          { from: 'input-depend', to: 'farmer-auton', relation: 'negative', label: 'limits' },
+          { from: 'farmer-auton', to: 'social-org', relation: 'positive', label: 'strengthens' }
+        ]
+      },
+      {
+        id: 'corporate-balancing',
+        name: 'Corporate Power Balancing Loop',
+        description: 'Corporate power drives input dependency, reducing farmer autonomy, but can be challenged through social organization and policy.',
+        color: '#f44336',
+        paths: [
+          { from: 'corp-power', to: 'input-depend', relation: 'positive', label: 'promotes' },
+          { from: 'input-depend', to: 'farmer-auton', relation: 'negative', label: 'limits' },
+          { from: 'farmer-auton', to: 'social-org', relation: 'positive', label: 'strengthens' },
+          { from: 'social-org', to: 'policy', relation: 'positive', label: 'advocates for' },
+          { from: 'policy', to: 'corp-power', relation: 'negative', label: 'constrains' }
+        ]
+      },
+      {
+        id: 'land-tenure-loop',
+        name: 'Land Access & Control Loop',
+        description: 'Unequal land tenure and distribution patterns limit farmer autonomy and access to productive resources, while being reinforced by corporate power and requiring policy interventions to change.',
+        color: '#795548',
+        paths: [
+          { from: 'land-tenure', to: 'farmer-auton', relation: 'negative', label: 'constrains' },
+          { from: 'corp-power', to: 'land-tenure', relation: 'positive', label: 'reinforces' },
+          { from: 'policy', to: 'land-tenure', relation: 'negative', label: 'reforms' },
+          { from: 'social-org', to: 'land-tenure', relation: 'negative', label: 'challenges' }
+        ]
+      }
+    ];
+
+    // Application state
+    let activeLoopId = null;
+    let selectedNodeId = null;
+    let svgScale = 1;
+    let svgTranslate = { x: 0, y: 0 };
+    let isDragging = false;
+    let dragStart = { x: 0, y: 0 };
+    const NODE_RADIUS = 24;
+    let placedLabels = []; // Track placed label positions
+
+    // DOM elements
+    const svgContent = document.getElementById('svg-content');
+    const loopsList = document.getElementById('loops-list');
+    const nodeInfo = document.getElementById('node-info');
+    const diagram = document.getElementById('diagram');
+
+    // Helper functions
+    function getNode(id) {
+      return nodes.find(node => node.id === id);
+    }
+
+    function isNodeInActiveLoop(nodeId) {
+      if (!activeLoopId) return false;
+      const loop = loops.find(l => l.id === activeLoopId);
+      return loop && loop.paths.some(path => path.from === nodeId || path.to === nodeId);
+    }
+
+    function getNodeColor(node) {
+      if (selectedNodeId === node.id) return '#ffeb3b';
+      if (node.type === 'dimension') return '#4caf50';
+      if (node.type === 'challenge') return '#f44336';
+      if (node.type === 'outcome') return '#2196f3';
+      return '#757575';
+    }
+
+    function getNodeTypeDisplay(type) {
+      switch(type) {
+        case 'dimension': return 'Dimension/Leverage Point';
+        case 'challenge': return 'Challenge/Barrier';
+        case 'outcome': return 'Outcome/Indicator';
+        default: return type;
+      }
+    }
+
+    // Initialize diagram
+    function initializeDiagram() {
+      // Create loops list items
+      loops.forEach(loop => {
+        const loopItem = document.createElement('div');
+        loopItem.className = 'loop-item';
+        loopItem.id = `loop-${loop.id}`;
+        loopItem.style.borderLeftColor = loop.color;
+        
+        loopItem.innerHTML = `
+          <h4 class="loop-title" style="color: ${loop.color}">${loop.name}</h4>
+          <p class="loop-description">${loop.description}</p>
+        `;
+        
+        loopItem.addEventListener('click', () => {
+          if (activeLoopId === loop.id) {
+            setActiveLoop(null);
+          } else {
+            setActiveLoop(loop.id);
+          }
+        });
+        
+        loopsList.appendChild(loopItem);
+      });
+      
+      // Draw diagram
+      drawDiagram();
+      
+      // Set up zoom controls
+      document.getElementById('zoom-in').addEventListener('click', () => {
+        svgScale = Math.min(svgScale * 1.2, 3);
+        updateTransform();
+      });
+      
+      document.getElementById('zoom-out').addEventListener('click', () => {
+        svgScale = Math.max(svgScale / 1.2, 0.5);
+        updateTransform();
+      });
+      
+      document.getElementById('zoom-reset').addEventListener('click', () => {
+        svgScale = 1;
+        svgTranslate = { x: 0, y: 0 };
+        updateTransform();
+      });
+      
+      // Set up pan functionality
+      diagram.addEventListener('mousedown', startDrag);
+      diagram.addEventListener('mousemove', doDrag);
+      diagram.addEventListener('mouseup', endDrag);
+      diagram.addEventListener('mouseleave', endDrag);
+    }
+
+    // Draw diagram - paths and nodes
+    function drawDiagram() {
+      // Clear existing content
+      svgContent.innerHTML = '';
+      placedLabels = []; // Reset placed labels tracker
+      
+      // Draw all paths
+      loops.forEach(loop => {
+        loop.paths.forEach(path => {
+          const fromNode = getNode(path.from);
+          const toNode = getNode(path.to);
+          const isActive = activeLoopId === loop.id || 
+                          (selectedNodeId && (selectedNodeId === path.from || selectedNodeId === path.to));
+          
+          drawPath(fromNode, toNode, path, isActive, loop.id);
+        });
+      });
+      
+      // Draw all nodes
+      nodes.forEach(node => {
+        drawNode(node);
+      });
+    }
+
+    function drawPath(fromNode, toNode, path, isActive, loopId) {
+      const dx = toNode.x - fromNode.x;
+      const dy = toNode.y - fromNode.y;
+      const midX = (fromNode.x + toNode.x) / 2;
+      const midY = (fromNode.y + toNode.y) / 2;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      
+      // Adjust curve factor based on distance
+      let curveFactor = 0.2;
+      if (distance < 150) {
+        curveFactor = 0.3; // More curve for short connections
+      } else if (distance > 300) {
+        curveFactor = 0.15; // Less curve for long connections
+      }
+      
+      const controlX = midX - dy * curveFactor;
+      const controlY = midY + dx * curveFactor;
+      
+      const color = isActive
+        ? (path.relation === 'positive' ? '#4CAF50' : '#F44336')
+        : (path.relation === 'positive' ? '#AED581' : '#EF9A9A');
+      
+      const opacity = isActive ? 1 : 0.6;
+      const strokeWidth = isActive ? 3 : 1.5;
+      const dashArray = path.relation === 'negative' ? '5,5' : '0';
+      const markerId = isActive ? 'arrow-active' : 'arrow';
+      
+      // Create path element
+      const pathElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      pathElement.classList.add('path');
+      pathElement.dataset.loopId = loopId;
+      pathElement.dataset.from = fromNode.id;
+      pathElement.dataset.to = toNode.id;
+      pathElement.setAttribute('d', `M ${fromNode.x} ${fromNode.y} Q ${controlX} ${controlY} ${toNode.x} ${toNode.y}`);
+      pathElement.setAttribute('stroke', color);
+      pathElement.setAttribute('stroke-width', strokeWidth);
+      pathElement.setAttribute('stroke-opacity', opacity);
+      pathElement.setAttribute('stroke-dasharray', dashArray);
+      pathElement.setAttribute('marker-end', `url(#${markerId})`);
+      
+      // Add path to SVG
+      svgContent.appendChild(pathElement);
+      
+      // Create label - only if active or selected
+      if (isActive) {
+        // Calculate position for label to avoid node overlap
+        // Get point along the curve, but slightly offset to avoid nodes
+        const t = 0.5; // Midpoint of curve
+        const curveX = (1-t)*(1-t)*fromNode.x + 2*(1-t)*t*controlX + t*t*toNode.x;
+        const curveY = (1-t)*(1-t)*fromNode.y + 2*(1-t)*t*controlY + t*t*toNode.y;
+        
+        // Offset label based on path direction and curve
+        const labelOffset = 20; // Base offset distance
+        const normalizedDx = dx / distance;
+        const normalizedDy = dy / distance;
+        
+        // Get perpendicular vector for label offset
+        const perpX = -normalizedDy * labelOffset * 1.5;
+        const perpY = normalizedDx * labelOffset * 1.5;
+        
+        // Create label background for better readability
+        const labelBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        labelBg.setAttribute('x', curveX + perpX - 30);
+        labelBg.setAttribute('y', curveY + perpY - 10);
+        labelBg.setAttribute('width', 60);
+        labelBg.setAttribute('height', 20);
+        labelBg.setAttribute('fill', 'white');
+        labelBg.setAttribute('fill-opacity', '0.7');
+        labelBg.setAttribute('rx', '3');
+        svgContent.appendChild(labelBg);
+        
+        // Create text element
+        const textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        textElement.classList.add('path-label');
+        textElement.dataset.loopId = loopId;
+        textElement.setAttribute('x', curveX + perpX);
+        textElement.setAttribute('y', curveY + perpY + 5);
+        textElement.setAttribute('text-anchor', 'middle');
+        textElement.setAttribute('fill', '#333');
+        textElement.setAttribute('font-size', '12px');
+        textElement.setAttribute('pointer-events', 'none');
+        textElement.textContent = path.label;
+        
+        // Add label to SVG
+        svgContent.appendChild(textElement);
+      }
+    }
+
+    function drawNode(node) {
+      const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      group.classList.add('node');
+      group.dataset.id = node.id;
+      
+      // Check if node is part of active loop
+      const isActive = isNodeInActiveLoop(node.id);
+      
+      // Add event listeners
+      group.addEventListener('click', () => {
+        if (selectedNodeId === node.id) {
+          setSelectedNode(null);
+        } else {
+          setSelectedNode(node.id);
+        }
+      });
+      
+      // Create circle
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.classList.add('node-circle');
+      circle.setAttribute('cx', node.x);
+      circle.setAttribute('cy', node.y);
+      circle.setAttribute('r', NODE_RADIUS);
+      circle.setAttribute('fill', getNodeColor(node));
+      circle.setAttribute('stroke', isActive || selectedNodeId === node.id ? '#000' : '#ccc');
+      circle.setAttribute('stroke-width', isActive || selectedNodeId === node.id ? 2 : 1);
+      circle.setAttribute('opacity', isActive || !activeLoopId || selectedNodeId === node.id ? 1 : 0.7);
+      
+      // Create abbreviation text
+      const abbr = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      abbr.classList.add('node-abbreviation');
+      abbr.setAttribute('x', node.x);
+      abbr.setAttribute('y', node.y + 4);
+      abbr.setAttribute('text-anchor', 'middle');
+      abbr.textContent = node.id.substring(0, 3).toUpperCase();
+      
+      // Create label text
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.classList.add('node-label');
+      label.setAttribute('x', node.x);
+      label.setAttribute('y', node.y + NODE_RADIUS + 16);
+      label.setAttribute('text-anchor', 'middle');
+      label.setAttribute('fill', isActive || selectedNodeId === node.id ? '#000' : '#666');
+      label.setAttribute('font-weight', isActive || selectedNodeId === node.id ? 'bold' : 'normal');
+      label.textContent = node.label;
+      
+      // Add to group
+      group.appendChild(circle);
+      group.appendChild(abbr);
+      group.appendChild(label);
+      
+      // Add to SVG
+      svgContent.appendChild(group);
+    }
+
+    // Update the node info panel
+    function updateNodeInfo(nodeId) {
+      if (!nodeId) {
+        nodeInfo.classList.remove('visible');
+        return;
+      }
+      
+      const node = getNode(nodeId);
+      if (!node) return;
+      
+      // Get related loops
+      const relatedLoops = loops.filter(loop => 
+        loop.paths.some(path => path.from === node.id || path.to === node.id)
+      );
+      
+      // Create node info content
+      nodeInfo.innerHTML = `
+        <h4 class="node-title" style="color: ${getNodeColor(node)}">${node.label}</h4>
+        <p class="node-description">${node.description}</p>
+        <div class="node-type">
+          <div class="color-indicator" style="background-color: ${getNodeColor(node)}"></div>
+          <span>${getNodeTypeDisplay(node.type)}</span>
+        </div>
+        ${relatedLoops.length > 0 ? `
+          <div style="margin-top: 12px;">
+            <h5 style="margin-top: 0; margin-bottom: 6px; font-size: 14px;">Involved in loops:</h5>
+            <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+              ${relatedLoops.map(loop => `
+                <span style="font-size: 12px; background-color: ${loop.color}; color: white; padding: 3px 6px; border-radius: 12px;">
+                  ${loop.name}
+                </span>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+      `;
+      
+      nodeInfo.classList.add('visible');
+    }
+
+    // Set active loop
+    function setActiveLoop(loopId) {
+      // Update state
+      activeLoopId = loopId;
+      
+      // Update UI
+      document.querySelectorAll('.loop-item').forEach(item => {
+        if (loopId && item.id === `loop-${loopId}`) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+      
+      // Redraw diagram
+      drawDiagram();
+    }
+
+    // Set selected node
+    function setSelectedNode(nodeId) {
+      // Update state
+      selectedNodeId = nodeId;
+      
+      // Update node info panel
+      updateNodeInfo(nodeId);
+      
+      // Redraw diagram
+      drawDiagram();
+    }
+
+    // SVG pan functionality
+    function startDrag(e) {
+      if (e.button === 0) { // Left mouse button
+        isDragging = true;
+        dragStart = { x: e.clientX, y: e.clientY };
+        e.preventDefault();
+      }
+    }
+
+    function doDrag(e) {
+      if (isDragging) {
+        const dx = (e.clientX - dragStart.x) / svgScale;
+        const dy = (e.clientY - dragStart.y) / svgScale;
+        
+        svgTranslate.x += dx;
+        svgTranslate.y += dy;
+        
+        dragStart = { x: e.clientX, y: e.clientY };
+        updateTransform();
+        e.preventDefault();
+      }
+    }
+
+    function endDrag() {
+      isDragging = false;
+    }
+
+    function updateTransform() {
+      svgContent.setAttribute('transform', `scale(${svgScale}) translate(${svgTranslate.x}, ${svgTranslate.y})`);
+    }
+
+    // Initialize the diagram when page loads
+    window.addEventListener('DOMContentLoaded', initializeDiagram);
+  </script>
+</body>
+</html>
